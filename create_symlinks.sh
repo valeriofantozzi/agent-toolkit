@@ -1,34 +1,56 @@
 #!/bin/bash
 
-# Script per creare symlink dei file .md in due directory diverse
-# Directory sorgente (directory dove si trova questo script)
+# Script to create symlinks and instruction files for different AI agents
+# Source directory (where this script is located)
 SOURCE_DIR="$(dirname "$(realpath "$0")")"
 
-# Directory destinazione
+# Destination directories
 GEMINI_DIR="$HOME/.gemini/antigravity/global_workflows"
 CURSOR_DIR="$HOME/.cursor/commands"
+COPILOT_DIR="$HOME/.github$HOME/.github/instructions"
 
-# Crea le directory se non esistono
+# Create directories if they don't exist
 mkdir -p "$GEMINI_DIR"
 mkdir -p "$CURSOR_DIR"
+mkdir -p "$COPILOT_DIR"
 
-# Trova tutti i file .md nella directory sorgente
+# Find all .md files in the source directory
 for file in "$SOURCE_DIR"/*.md; do
-    # Estrai solo il nome del file senza percorso
+    # Extract filename without path
     filename=$(basename "$file")
+    
+    # Skip README.md
+    if [ "$filename" = "README.md" ]; then
+        echo "Skipping $filename..."
+        continue
+    fi
+    
+    # Extract filename without extension for Copilot
+    basename_no_ext="${filename%.md}"
 
-    # Cancella eventuali symlink esistenti e crea i nuovi
-    echo "Creando symlink per $filename..."
+    echo "Processing $filename..."
 
-    # Rimuovi symlink esistenti se presenti
+    # Remove existing symlinks if present
     rm -f "$GEMINI_DIR/$filename"
     rm -f "$CURSOR_DIR/$filename"
 
-    # Crea i nuovi symlink
+    # Create symlinks for Gemini and Cursor
     ln -s "$file" "$GEMINI_DIR/$filename"
     ln -s "$file" "$CURSOR_DIR/$filename"
 
-    echo "Symlink creati per $filename"
+    # For Copilot: create a .instructions.md file with frontmatter
+    copilot_file="$COPILOT_DIR/${basename_no_ext}.instructions.md"
+    rm -f "$copilot_file"
+    
+    # Create Copilot instruction file with frontmatter + original content
+    {
+        echo "---"
+        echo "applyTo: '**'"
+        echo "---"
+        cat "$file"
+    } > "$copilot_file"
+
+    echo "Created symlinks for Gemini/Cursor and instruction file for Copilot: $filename"
 done
 
-echo "Operazione completata!"
+echo "Operation completed!"
