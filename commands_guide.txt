@@ -1,0 +1,190 @@
+# Advanced Guide to Custom Cursor Commands for AI (v2.0)
+
+## 1. Core Concept (Expanded)
+
+- **Definition:** Custom commands are Markdown (`.md`) files that act as prompt templates for Cursor's AI. They allow you to encapsulate complex instructions into a single, reusable command.
+- **Main Purpose:**
+  - **Automation:** Execute repetitive tasks (e.g., testing, documentation) with a single command.
+  - **Standardization:** Ensure that code and documentation follow the same guidelines across the team.
+  - **Efficiency:** Speed up the development workflow by reducing the need to write complex prompts every time.
+- **How it Works:**
+  - **Activation:** By typing `/` in the chat, Cursor displays a list of available commands.
+  - **Context:** Commands are "context-aware." They can operate on:
+    - Code selected by the user.
+    - The currently open file.
+    - The entire project codebase (via `@codebase`).
+
+## 2. Detailed Setup and Configuration
+
+- **Global Commands:**
+  - **Path:** `~/.cursor/commands/`
+  - **Usage:** For personal commands that you use across all your projects (e.g., `/my-git-workflow`).
+
+- **Project Commands:**
+  - **Path:** `.cursor/commands/` (in the project root)
+  - **Usage:** For project-specific commands (e.g., `/run-project-x-integration-tests`).
+
+- **Team Commands (Enterprise):**
+  - **Management:** Configured via the Cursor dashboard by team administrators.
+  - **Distribution:** Automatically available to all team members, ensuring consistency.
+
+- **Naming Conventions:**
+  - Use `kebab-case` for filenames (e.g., `generate-unit-tests.md`). It's a de-facto standard that improves readability.
+
+## 3. Writing Effective Commands: Guiding Principles
+
+To create powerful and reliable commands, follow these principles:
+
+- **Clarity and Specificity:** Don't be vague. Instead of "Improve the code," write "Refactor the code to reduce cyclomatic complexity by extracting logic into smaller, pure functions."
+- **Structure with Markdown:** Use headings (`#`), bulleted lists (`-`), and numbered lists (`1.`) to break down instructions into logical steps. This helps the AI follow the workflow you have in mind.
+- **Define the AI's "Role":** Start the command by defining who the AI should be. Example: "Act as a senior software engineer specializing in security."
+- **Provide Step-by-Step Instructions:** Guide the AI through a process. Example: "1. First, analyze the code. 2. Then, identify vulnerabilities. 3. Finally, write the corrected code with security patches."
+- **Specify the Output Format:** Explicitly ask for a specific format for the response. Examples:
+  - "Provide the output in JSON format."
+  - "Write the documentation in Markdown format."
+  - "Present the results in a table with the columns 'Issue', 'Solution', and 'Risk'."
+
+## 4. Catalog of Effective Commands from the Community
+
+Here is a selection of powerful commands, inspired by community repositories and best practices.
+
+### Category: Code Quality and Maintenance
+
+- **File Name:** `complete-code-review.md`
+- **Objective:** Perform a complete and structured review of the selected code.
+- **Example Prompt:**
+  ```markdown
+  Act as an expert code reviewer. Analyze the provided code and evaluate the following aspects, providing a report in Markdown format:
+
+  1.  **Potential Bugs:** Identify logical errors, race conditions, or incorrect exception handling.
+  2.  **Performance:** Find bottlenecks, inefficient algorithms, or unnecessary I/O operations.
+  3.  **Readability and Maintainability:** Assess the clarity of the code, naming, and complexity. Suggest refactoring if necessary.
+  4.  **Best Practices:** Check if the code follows the standard guidelines of the language and framework used.
+  5.  **Security:** Look for common vulnerabilities (e.g., injection, secret management, input validation).
+
+  For each point, provide examples of problematic code and the corrected version.
+  ```
+- **Use Case:** Before submitting a Pull Request or after writing a new complex feature.
+
+---
+
+### Category: Documentation and Security
+
+- **File Name:** `security-audit.md`
+- **Objective:** Perform a targeted security audit on the code.
+- **Example Prompt:**
+  ```markdown
+  Act as a cybersecurity expert. Perform a security audit on the provided code.
+
+  **Security Checklist:**
+  - [ ] **SQL Injection:** Check all database queries.
+  - [ ] **Cross-Site Scripting (XSS):** Verify that HTML output is correctly sanitized.
+  - [ ] **Authentication and Authorization:** Ensure that endpoints are properly protected.
+  - [ ] **Secret Management:** Verify that there are no hardcoded API keys, passwords, or other secrets.
+  - [ ] **Input Validation:** Check that all inputs from users or external systems are validated.
+
+  Provide a detailed report with the issues found, the risk level (High, Medium, Low), and the code for mitigation.
+  ```
+- **Use Case:** When developing features that handle sensitive data or user input.
+
+---
+
+### Category: Development and Workflow
+
+- **File Name:** `write-complete-tests.md`
+- **Objective:** Generate a complete test suite for a function or class.
+- **Example Prompt:**
+  ```markdown
+  Act as a QA engineer. Write a unit test suite for the selected code using the [Framework Name, e.g., Jest/PyTest] framework.
+
+  The test suite must include:
+  1.  **Happy Path Tests:** Verify that the code works as expected with valid inputs.
+  2.  **Edge Case Tests:** Test behavior with boundary inputs (e.g., 0, null, empty strings, empty arrays).
+  3.  **Error Case Tests:** Ensure that the code correctly handles invalid inputs and throws the appropriate exceptions.
+  4.  **Mocking:** If the code has external dependencies (APIs, databases), use mocks to isolate it.
+
+  Organize the tests clearly and comment on the purpose of each test.
+  ```
+- **Use Case:** To speed up test writing and ensure good code coverage.
+
+---
+
+- **File Name:** `conventional-commit.md`
+- **Objective:** Generate a commit message following the Conventional Commits standard.
+- **Example Prompt:**
+  ```markdown
+  Analyze the changes I have made in my git workspace. Generate a commit message that strictly follows the Conventional Commits specification.
+
+  The message must have:
+  - A type (e.g., `feat`, `fix`, `docs`, `refactor`).
+  - An optional scope.
+  - A concise description.
+  - An optional body that explains the "why" of the change.
+  - An optional footer for "BREAKING CHANGES".
+  ```
+- **Use Case:** To standardize Git history and automate changelog generation.
+
+## 5. Advanced Tips
+
+- **Chaining Commands:** You cannot automatically chain commands, but you can use the output of one command as the context for the next. For example, after running `/refactor-readability`, you can select the new code and launch `/write-complete-tests`.
+- **Iterating on the Result:** If a command's output isn't perfect, you can correct it with a follow-up prompt. Example: "Good start, but in the test you wrote, please also mock the external API call."
+- **Leveraging `@codebase`:** For questions or commands that require a high-level view of the project, use the `@codebase` symbol. Example: `@codebase What is the standard way to handle errors in this project?`
+
+## 6. External Resources
+
+- **Community Repositories:** Explore commands created by other users to find inspiration.
+  - **hamzafer/cursor-commands:** [https://github.com/hamzafer/cursor-commands](https://github.com/hamzafer/cursor-commands)
+- **Official Documentation:** Keep an eye on the official website for the latest updates on the feature.
+  - **Cursor Docs:** [https://cursor.com/docs](https://cursor.com/docs)
+
+## 7. Principles of Communication with the AI Agent (Prompt Engineering)
+
+This section describes how to "talk" to the AI agent to maximize the quality of its responses.
+
+### 7.1. The Golden Rule: Clarity and Context
+- **Be Specific:** Instead of "it doesn't work," describe the expected behavior, the actual behavior, and provide the exact error.
+- **Provide Relevant Context:** Always include the code, error messages, language/framework version, and your final goal.
+- **Use Context Symbols:**
+  - `@filename.ext`: Focuses the AI's attention on a specific file.
+  - `@codebase`: Allows the AI to analyze the entire project to answer questions about architecture, conventions, or to find function definitions.
+
+### 7.2. Defining the Role (Role-Playing)
+Assigning a role to the AI drastically improves its performance because it adopts the style and knowledge of an expert.
+- **Example 1 (Generic):** "Act as a senior programmer with 10 years of experience in Python and microservices architectures."
+- **Example 2 (Specific):** "You are a security expert specializing in web applications. Your task is to find vulnerabilities in the code I provide and propose secure solutions."
+
+### 7.3. Breaking Down Complex Tasks (Multi-Stage & Chain-of-Thought)
+For complex tasks, don't ask for everything in a single prompt. Guiding the AI step-by-step produces better results.
+- **Wrong Approach:** "Create a user API with authentication, database connection, tests, and documentation."
+- **Correct Approach (Multi-Stage):**
+  1.  **Planning:** "I want to create a REST API for user management. What are the steps and technologies you recommend? Propose a project structure."
+  2.  **Code:** "Great plan. Now write the code for the user registration endpoint using Express.js and connecting to PostgreSQL."
+  3.  **Test:** "Write the unit tests for the registration endpoint you just created."
+  4.  **Documentation:** "Generate the OpenAPI documentation for this API."
+- **Chain-of-Thought (CoT):** Ask the AI to "think out loud." Example: "Explain step-by-step how you intend to solve this bug before writing the code."
+
+### 7.4. Providing Examples (Few-Shot Prompting)
+If you want an output with a specific structure or style, show it.
+- **Example:** "I want to convert this function from JavaScript to Python. Here is an example:"
+  ```javascript
+  // JS
+  function (a, b) { return a + b; }
+  ```
+  ```python
+  # Python
+  def add(a, b):
+      return a + b
+  ```
+  "Now convert this function: [your JS function]."
+
+### 7.5. Dialogue and Iteration
+Treat the interaction like a pair programming session.
+- **Ask Follow-up Questions:** "Why did you choose to use a class instead of a function?"
+- **Ask for Alternatives:** "Is there a more performant way to write this algorithm?"
+- **Correct the AI:** If the AI makes a mistake, correct it explicitly. "The function you wrote doesn't handle the case where the input is `null`. Modify it to add this check."
+
+### 7.6. Global Context Configuration (User Settings)
+Use Cursor's settings to provide the AI with context that applies to all conversations. You can define:
+- **Language and Tone:** "Always respond in English, with a professional tone."
+- **Code Preferences:** "Always use double quotes for strings in JavaScript. Prefer arrow functions."
+- **General Principles:** "Always prioritize code readability over micro-optimization."
