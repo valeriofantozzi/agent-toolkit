@@ -7,7 +7,7 @@ SOURCE_DIR="$(dirname "$(realpath "$0")")"
 # Destination directories
 GEMINI_DIR="$HOME/.gemini/antigravity/global_workflows"
 CURSOR_DIR="$HOME/.cursor/commands"
-COPILOT_DIR="$HOME/.github$HOME/.github/instructions"
+COPILOT_DIR="$HOME/.vscode/instructions"
 
 # Create directories if they don't exist
 mkdir -p "$GEMINI_DIR"
